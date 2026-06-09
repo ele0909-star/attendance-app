@@ -56,13 +56,13 @@ def get_ppurio_token() -> str:
     credential = base64.b64encode(f'{PPURIO_ACCOUNT}:{PPURIO_API_KEY}'.encode()).decode()
     
     session = requests.Session()
-adapter = requests.adapters.HTTPAdapter(max_retries=3)
-session.mount("https://", adapter)
-    
+    adapter = requests.adapters.HTTPAdapter(max_retries=3)
+    session.mount("https://", adapter)
+   
         
     resp = session.post(
         PPURIO_TOKEN_URL,
-        headers={'Authorization': f'Basic {credential}', 'Content-Type': 'application/json'},
+        headers={'Authorization': f'Basic {credential}'},
         timeout=30
     )
     resp.raise_for_status()

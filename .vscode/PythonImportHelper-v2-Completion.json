@@ -214,7 +214,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def get_ppurio_token() -> str:\n    \"\"\"뿌리오 액세스 토큰 발급\"\"\"\n    credential = base64.b64encode(f'{PPURIO_ACCOUNT}:{PPURIO_API_KEY}'.encode()).decode()\n    session = requests.Session()\nadapter = requests.adapters.HTTPAdapter(max_retries=3)\nsession.mount(\"https://\", adapter)\n    resp = session.post(\n        PPURIO_TOKEN_URL,\n        headers={'Authorization': f'Basic {credential}', 'Content-Type': 'application/json'},\n        timeout=30",
+        "peekOfCode": "def get_ppurio_token() -> str:\n    \"\"\"뿌리오 액세스 토큰 발급\"\"\"\n    credential = base64.b64encode(f'{PPURIO_ACCOUNT}:{PPURIO_API_KEY}'.encode()).decode()\n    session = requests.Session()\n    adapter = requests.adapters.HTTPAdapter(max_retries=3)\n    session.mount(\"https://\", adapter)\n    resp = session.post(\n        PPURIO_TOKEN_URL,\n        headers={'Authorization': f'Basic {credential}'},\n        timeout=30",
         "detail": "app",
         "documentation": {}
     },
@@ -422,15 +422,6 @@
         "importPath": "app",
         "description": "app",
         "peekOfCode": "COLUMNS = ['사번', '이름', '소속', '직책', '이메일', '연락처', '출석체크']\ndef normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)\n    \"\"\"\n    raw = str(raw).strip()\n    digits_only = re.sub(r'\\D', '', raw)\n    # 원본(하이픈 제거 전)이 010으로 시작하면 강제 보정",
-        "detail": "app",
-        "documentation": {}
-    },
-    {
-        "label": "adapter",
-        "kind": 5,
-        "importPath": "app",
-        "description": "app",
-        "peekOfCode": "adapter = requests.adapters.HTTPAdapter(max_retries=3)\nsession.mount(\"https://\", adapter)\n    resp = session.post(\n        PPURIO_TOKEN_URL,\n        headers={'Authorization': f'Basic {credential}', 'Content-Type': 'application/json'},\n        timeout=30\n    )\n    resp.raise_for_status()\n    data = resp.json()\n    return data['token']",
         "detail": "app",
         "documentation": {}
     }
