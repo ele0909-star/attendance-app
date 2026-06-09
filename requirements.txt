@@ -1,6 +1,6 @@
 flask
 flask-socketio
-openpyx1
+openpyxl
 pandas
 requests
 gunicorn
