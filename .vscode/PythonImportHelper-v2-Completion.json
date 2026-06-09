@@ -340,7 +340,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def on_connect():\n    with data_lock:\n        data = list(attendance_data)\n    emit('data_updated', {'data': data})\nif __name__ == '__main__':\n    import os\n    port = int(os.environ.get('PORT', 5000))\n    socketio.run(app, debug=False, host='0.0.0.0', port=port)",
+        "peekOfCode": "def on_connect():\n    with data_lock:\n        data = list(attendance_data)\n    emit('data_updated', {'data': data})\nif __name__ == '__main__':\n    import os\n    port = int(os.environ.get('PORT', 5000))\n    socketio.run(app, debug=False, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)",
         "detail": "app",
         "documentation": {}
     },
@@ -349,7 +349,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app = Flask(__name__)\napp.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키",
+        "peekOfCode": "app = Flask(__name__)\napp.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키",
         "detail": "app",
         "documentation": {}
     },
@@ -358,7 +358,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)",
+        "peekOfCode": "app.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)",
         "detail": "app",
         "documentation": {}
     },
@@ -367,7 +367,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================",
+        "peekOfCode": "app.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================",
         "detail": "app",
         "documentation": {}
     },
@@ -376,7 +376,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'",
+        "peekOfCode": "app.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'",
         "detail": "app",
         "documentation": {}
     },
@@ -385,7 +385,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "socketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'\nPPURIO_MESSAGE_URL = 'https://api.ppurio.com/v1/message'",
+        "peekOfCode": "socketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'\nPPURIO_MESSAGE_URL = 'https://api.ppurio.com/v1/message'",
         "detail": "app",
         "documentation": {}
     },
