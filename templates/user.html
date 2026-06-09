@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>출석 체크</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    background: linear-gradient(145deg, #1e293b, #162032);
+    border: 1px solid #1e40af;
+    border-radius: 24px;
+    padding: 48px 44px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(59,130,246,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #34d399, #3b82f6);
+    background-size: 200%;
+    animation: shimmer 3s linear infinite;
+  }
+  @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
+
+  .card-header { text-align: center; margin-bottom: 36px; }
+  
+  .icon-wrap {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(52,211,153,0.2));
+    border: 1px solid rgba(59,130,246,0.3);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+
+  .live-ring {
+    position: absolute;
+    inset: -4px;
+    border-radius: 24px;
+    border: 2px solid rgba(52,211,153,0.4);
+    animation: ringPulse 2s infinite;
+  }
+  @keyframes ringPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(1.05)} }
+
+  h1 { font-size: 24px; font-weight: 700; color: #f1f5f9; margin-bottom: 6px; }
+  .subtitle { font-size: 14px; color: #64748b; }
+  .subtitle span { color: #60a5fa; font-weight: 600; }
+
+  .form-group { margin-bottom: 20px; }
+  
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 8px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: #0f172a;
+    border: 1.5px solid #334155;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 16px;
+    color: #f1f5f9;
+    outline: none;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  input[type="text"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+  }
+  input[type="text"]::placeholder { color: #475569; font-size: 14px; }
+
+  .attend-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+    box-shadow: 0 8px 24px rgba(59,130,246,0.3);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .attend-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(59,130,246,0.4);
+  }
+  .attend-btn:active:not(:disabled) { transform: translateY(0); }
+  .attend-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Result states */
+  .result {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  .result.success {
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.35);
+  }
+  .result.error {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+  }
+  .result.already {
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.3);
+  }
+
+  .result-icon { font-size: 40px; margin-bottom: 10px; }
+  .result-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .result.success .result-title { color: #34d399; }
+  .result.error .result-title { color: #f87171; }
+  .result.already .result-title { color: #fbbf24; }
+  .result-msg { font-size: 13px; color: #94a3b8; }
+  .result-time { margin-top: 8px; font-size: 12px; color: #64748b; }
+
+  .connection-badge {
+    position: absolute;
+    top: 16px; right: 16px;
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: #64748b;
+  }
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #ef4444;
+    transition: all 0.3s;
+  }
+  .dot.connected { background: #34d399; box-shadow: 0 0 6px #34d399; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  .footer { margin-top: 32px; font-size: 12px; color: #334155; text-align: center; }
+  .footer a { color: #3b82f6; text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* confetti animation on success */
+  .confetti { position: fixed; pointer-events: none; top: 0; left: 0; width: 100%; height: 100%; z-index: 999; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="connection-badge">
+    <div class="dot" id="connDot"></div>
+    <span id="connText">연결 중</span>
+  </div>
+
+  <div class="card-header">
+    <div class="icon-wrap">
+      <div class="live-ring"></div>
+      ✋
+    </div>
+    <h1>출석 체크</h1>
+    <p class="subtitle">사번과 이름을 입력하고 <span>출석</span> 버튼을 클릭하세요</p>
+  </div>
+
+  <div class="form-group">
+    <label>사번</label>
+    <input type="text" id="empId" placeholder="사번을 입력하세요" maxlength="20" onkeydown="if(event.key==='Enter')document.getElementById('name').focus()">
+  </div>
+
+  <div class="form-group">
+    <label>이름</label>
+    <input type="text" id="name" placeholder="이름을 입력하세요" maxlength="30" onkeydown="if(event.key==='Enter')attend()">
+  </div>
+
+  <button class="attend-btn" id="attendBtn" onclick="attend()">
+    <span>✅</span> 출석하기
+  </button>
+
+  <div class="result" id="result">
+    <div class="result-icon" id="resultIcon"></div>
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <div class="result-time" id="resultTime"></div>
+  </div>
+</div>
+
+<div class="footer">
+  관리자 페이지: <a href="/admin">관리자 화면 바로가기</a>
+</div>
+
+<script>
+const socket = io();
+
+socket.on('connect', () => {
+  document.getElementById('connDot').classList.add('connected');
+  document.getElementById('connText').textContent = '연결됨';
+});
+socket.on('disconnect', () => {
+  document.getElementById('connDot').classList.remove('connected');
+  document.getElementById('connText').textContent = '연결 끊김';
+});
+
+function attend() {
+  const empId = document.getElementById('empId').value.trim();
+  const name = document.getElementById('name').value.trim();
+  
+  const resultEl = document.getElementById('result');
+  resultEl.style.display = 'none';
+  resultEl.className = 'result';
+
+  if (!empId || !name) {
+    showResult('error', '⚠️', '입력 오류', '사번과 이름을 모두 입력해주세요.', '');
+    return;
+  }
+
+  const btn = document.getElementById('attendBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span> 처리 중...';
+
+  fetch('/api/attend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ emp_id: empId, name: name })
+  })
+  .then(r => r.json())
+  .then(res => {
+    btn.disabled = false;
+    btn.innerHTML = '<span>✅</span> 출석하기';
+
+    if (res.success) {
+      showResult('success', '🎉', '출석 완료!', res.message, res.time ? '출석 시간: ' + res.time : '');
+      document.getElementById('empId').value = '';
+      document.getElementById('name').value = '';
+      launchConfetti();
+    } else {
+      const isAlready = res.message.includes('이미');
+      showResult(isAlready ? 'already' : 'error',
+        isAlready ? '⚡' : '❌',
+        isAlready ? '이미 출석됨' : '출석 실패',
+        res.message, '');
+    }
+  })
+  .catch(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<span>✅</span> 출석하기';
+    showResult('error', '❌', '오류', '서버와 통신 중 오류가 발생했습니다.', '');
+  });
+}
+
+function showResult(type, icon, title, msg, time) {
+  const el = document.getElementById('result');
+  el.className = 'result ' + type;
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('resultTime').textContent = time;
+  el.style.display = 'block';
+}
+
+function launchConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'confetti';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = Array.from({length: 80}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    r: Math.random() * 6 + 3,
+    d: Math.random() * 4 + 2,
+    color: ['#3b82f6','#34d399','#fbbf24','#f472b6','#a78bfa'][Math.floor(Math.random()*5)],
+    tilt: Math.random() * 10 - 10,
+    tiltAngle: 0,
+    tiltAngleInc: (Math.random() * 0.07) + 0.05
+  }));
+
+  let frame;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.tiltAngle += p.tiltAngleInc;
+      p.y += p.d;
+      p.tilt = Math.sin(p.tiltAngle) * 12;
+      ctx.beginPath();
+      ctx.fillStyle = p.color;
+      ctx.ellipse(p.x + p.tilt, p.y, p.r, p.r * 0.5, p.tiltAngle, 0, 2 * Math.PI);
+      ctx.fill();
+    });
+    if (pieces.some(p => p.y < canvas.height + 20)) {
+      frame = requestAnimationFrame(draw);
+    } else {
+      canvas.remove();
+    }
+  }
+  draw();
+  setTimeout(() => { cancelAnimationFrame(frame); canvas.remove(); }, 3000);
+}
+</script>
+</body>
+</html>

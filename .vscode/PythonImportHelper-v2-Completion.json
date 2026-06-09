@@ -1,0 +1,428 @@
+[
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "render_template",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "jsonify",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "send_file",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "redirect",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "url_for",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "SocketIO",
+        "importPath": "flask_socketio",
+        "description": "flask_socketio",
+        "isExtraImport": true,
+        "detail": "flask_socketio",
+        "documentation": {}
+    },
+    {
+        "label": "emit",
+        "importPath": "flask_socketio",
+        "description": "flask_socketio",
+        "isExtraImport": true,
+        "detail": "flask_socketio",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "openpyxl",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "openpyxl",
+        "description": "openpyxl",
+        "detail": "openpyxl",
+        "documentation": {}
+    },
+    {
+        "label": "PatternFill",
+        "importPath": "openpyxl.styles",
+        "description": "openpyxl.styles",
+        "isExtraImport": true,
+        "detail": "openpyxl.styles",
+        "documentation": {}
+    },
+    {
+        "label": "Font",
+        "importPath": "openpyxl.styles",
+        "description": "openpyxl.styles",
+        "isExtraImport": true,
+        "detail": "openpyxl.styles",
+        "documentation": {}
+    },
+    {
+        "label": "Alignment",
+        "importPath": "openpyxl.styles",
+        "description": "openpyxl.styles",
+        "isExtraImport": true,
+        "detail": "openpyxl.styles",
+        "documentation": {}
+    },
+    {
+        "label": "Border",
+        "importPath": "openpyxl.styles",
+        "description": "openpyxl.styles",
+        "isExtraImport": true,
+        "detail": "openpyxl.styles",
+        "documentation": {}
+    },
+    {
+        "label": "Side",
+        "importPath": "openpyxl.styles",
+        "description": "openpyxl.styles",
+        "isExtraImport": true,
+        "detail": "openpyxl.styles",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
+        "label": "base64",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "base64",
+        "description": "base64",
+        "detail": "base64",
+        "documentation": {}
+    },
+    {
+        "label": "uuid",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "uuid",
+        "description": "uuid",
+        "detail": "uuid",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "threading",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "threading",
+        "description": "threading",
+        "detail": "threading",
+        "documentation": {}
+    },
+    {
+        "label": "normalize_phone",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)\n    \"\"\"\n    raw = str(raw).strip()\n    digits_only = re.sub(r'\\D', '', raw)\n    # 원본(하이픈 제거 전)이 010으로 시작하면 강제 보정\n    stripped_raw = re.sub(r'[\\s\\-]', '', raw)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "get_ppurio_token",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def get_ppurio_token() -> str:\n    \"\"\"뿌리오 액세스 토큰 발급\"\"\"\n    credential = base64.b64encode(f'{PPURIO_ACCOUNT}:{PPURIO_API_KEY}'.encode()).decode()\n    resp = requests.post(\n        PPURIO_TOKEN_URL,\n        headers={'Authorization': f'Basic {credential}', 'Content-Type': 'application/json'},\n        timeout=10\n    )\n    resp.raise_for_status()\n    data = resp.json()",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "send_sms_via_ppurio",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def send_sms_via_ppurio(targets: list, message: str) -> dict:\n    \"\"\"\n    targets: [{'to': '01012345678', 'name': '홍길동'}, ...]\n    message: 발송 내용\n    \"\"\"\n    token = get_ppurio_token()\n    msg_type = 'LMS' if len(message.encode('euc-kr', errors='replace')) > 90 else 'SMS'\n    payload = {\n        'account':       PPURIO_ACCOUNT,\n        'messageType':   msg_type,",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "load_excel",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def load_excel(filepath):\n    global attendance_data\n    df = pd.read_excel(filepath, dtype=str)\n    df.columns = df.columns.str.strip()\n    for col in COLUMNS[:-1]:\n        if col not in df.columns:\n            df[col] = ''\n    df['출석체크'] = ''\n    with data_lock:\n        attendance_data = df[COLUMNS].fillna('').to_dict('records')",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "save_excel_to_download",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def save_excel_to_download():\n    os.makedirs(app.config['DOWNLOAD_FOLDER'], exist_ok=True)\n    filepath = os.path.join(app.config['DOWNLOAD_FOLDER'], 'attendance_result.xlsx')\n    wb = openpyxl.Workbook()\n    ws = wb.active\n    ws.title = '출석부'\n    header_fill  = PatternFill(start_color='1E3A5F', end_color='1E3A5F', fill_type='solid')\n    header_font  = Font(name='맑은 고딕', bold=True, color='FFFFFF', size=11)\n    header_align = Alignment(horizontal='center', vertical='center', wrap_text=True)\n    border = Border(",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "index",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def index():\n    return redirect(url_for('admin'))\n@app.route('/admin')\ndef admin():\n    return render_template('admin.html')\n@app.route('/user')\ndef user():\n    return render_template('user.html')\n@app.route('/api/upload', methods=['POST'])\ndef upload_file():",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "admin",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def admin():\n    return render_template('admin.html')\n@app.route('/user')\ndef user():\n    return render_template('user.html')\n@app.route('/api/upload', methods=['POST'])\ndef upload_file():\n    if 'file' not in request.files:\n        return jsonify({'success': False, 'message': '파일이 없습니다.'})\n    file = request.files['file']",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "user",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def user():\n    return render_template('user.html')\n@app.route('/api/upload', methods=['POST'])\ndef upload_file():\n    if 'file' not in request.files:\n        return jsonify({'success': False, 'message': '파일이 없습니다.'})\n    file = request.files['file']\n    if not file.filename.endswith(('.xlsx', '.xls')):\n        return jsonify({'success': False, 'message': '엑셀 파일(.xlsx, .xls)만 업로드 가능합니다.'})\n    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "upload_file",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def upload_file():\n    if 'file' not in request.files:\n        return jsonify({'success': False, 'message': '파일이 없습니다.'})\n    file = request.files['file']\n    if not file.filename.endswith(('.xlsx', '.xls')):\n        return jsonify({'success': False, 'message': '엑셀 파일(.xlsx, .xls)만 업로드 가능합니다.'})\n    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)\n    filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'attendance.xlsx')\n    file.save(filepath)\n    try:",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "get_data",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def get_data():\n    with data_lock:\n        data = list(attendance_data)\n    return jsonify({'data': data})\n@app.route('/api/attend', methods=['POST'])\ndef mark_attendance():\n    body    = request.get_json()\n    emp_id  = str(body.get('emp_id', '')).strip()\n    name    = str(body.get('name',   '')).strip()\n    if not emp_id or not name:",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "mark_attendance",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def mark_attendance():\n    body    = request.get_json()\n    emp_id  = str(body.get('emp_id', '')).strip()\n    name    = str(body.get('name',   '')).strip()\n    if not emp_id or not name:\n        return jsonify({'success': False, 'message': '사번과 이름을 입력해주세요.'})\n    with data_lock:\n        if not attendance_data:\n            return jsonify({'success': False, 'message': '관리자가 아직 명단을 업로드하지 않았습니다.'})\n        matched = next((r for r in attendance_data",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "download_file",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def download_file():\n    with data_lock:\n        if not attendance_data:\n            return jsonify({'success': False, 'message': '다운로드할 데이터가 없습니다.'})\n    try:\n        filepath = save_excel_to_download()\n        return send_file(filepath, as_attachment=True,\n                         download_name=f'출석부_{datetime.now().strftime(\"%Y%m%d_%H%M%S\")}.xlsx',\n                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')\n    except Exception as e:",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "reset_data",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def reset_data():\n    global attendance_data\n    with data_lock:\n        attendance_data = []\n    socketio.emit('data_updated', {'data': []})\n    return jsonify({'success': True})\n# ── SMS API ─────────────────────────────────────────────────────────\n@app.route('/api/sms/preview', methods=['POST'])\ndef sms_preview():\n    \"\"\"발송 대상 미리보기 (실제 발송 없음)\"\"\"",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "sms_preview",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def sms_preview():\n    \"\"\"발송 대상 미리보기 (실제 발송 없음)\"\"\"\n    body    = request.get_json()\n    mode    = body.get('mode', 'all')   # 'all' | 'absent'\n    message = body.get('message', '').strip()\n    if not message:\n        return jsonify({'success': False, 'message': '메시지를 입력해주세요.'})\n    with data_lock:\n        rows = list(attendance_data)\n    if not rows:",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "sms_send",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def sms_send():\n    \"\"\"실제 뿌리오 API 호출하여 문자 발송\"\"\"\n    body    = request.get_json()\n    mode    = body.get('mode', 'all')\n    message = body.get('message', '').strip()\n    if not message:\n        return jsonify({'success': False, 'message': '메시지를 입력해주세요.'})\n    with data_lock:\n        rows = list(attendance_data)\n    if not rows:",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "on_connect",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def on_connect():\n    with data_lock:\n        data = list(attendance_data)\n    emit('data_updated', {'data': data})\nif __name__ == '__main__':\n    socketio.run(app, debug=True, host='0.0.0.0', port=5000)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app = Flask(__name__)\napp.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app.config['SECRET_KEY']",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app.config['UPLOAD_FOLDER']",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app.config['DOWNLOAD_FOLDER']",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "socketio",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "socketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'\nPPURIO_MESSAGE_URL = 'https://api.ppurio.com/v1/message'",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "PPURIO_MESSAGE_URL",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "PPURIO_MESSAGE_URL = 'https://api.ppurio.com/v1/message'\n# In-memory storage\nattendance_data = []\ndata_lock = threading.Lock()\nCOLUMNS = ['사번', '이름', '소속', '직책', '이메일', '연락처', '출석체크']\ndef normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "attendance_data",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "attendance_data = []\ndata_lock = threading.Lock()\nCOLUMNS = ['사번', '이름', '소속', '직책', '이메일', '연락처', '출석체크']\ndef normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)\n    \"\"\"\n    raw = str(raw).strip()",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "data_lock",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "data_lock = threading.Lock()\nCOLUMNS = ['사번', '이름', '소속', '직책', '이메일', '연락처', '출석체크']\ndef normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)\n    \"\"\"\n    raw = str(raw).strip()\n    digits_only = re.sub(r'\\D', '', raw)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "COLUMNS",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "COLUMNS = ['사번', '이름', '소속', '직책', '이메일', '연락처', '출석체크']\ndef normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)\n    \"\"\"\n    raw = str(raw).strip()\n    digits_only = re.sub(r'\\D', '', raw)\n    # 원본(하이픈 제거 전)이 010으로 시작하면 강제 보정",
+        "detail": "app",
+        "documentation": {}
+    }
+]

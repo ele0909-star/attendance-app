@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>출석 관리 시스템 - 관리자</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+    border-bottom: 1px solid #1e40af;
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo { width: 40px; height: 40px; background: linear-gradient(135deg,#3b82f6,#1d4ed8); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .header h1 { font-size: 20px; font-weight: 700; color: #f1f5f9; }
+  .header h1 span { color: #60a5fa; }
+  .badge { background: #1e3a5f; border: 1px solid #3b82f6; color: #60a5fa; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 1px; }
+  .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  /* ── Buttons ── */
+  .btn { padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all .2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .btn-primary   { background: linear-gradient(135deg,#3b82f6,#1d4ed8); color: #fff; box-shadow: 0 4px 12px rgba(59,130,246,.3); }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(59,130,246,.4); }
+  .btn-success   { background: linear-gradient(135deg,#10b981,#059669); color: #fff; box-shadow: 0 4px 12px rgba(16,185,129,.3); }
+  .btn-success:hover { transform: translateY(-1px); }
+  .btn-purple    { background: linear-gradient(135deg,#8b5cf6,#6d28d9); color: #fff; box-shadow: 0 4px 12px rgba(139,92,246,.3); }
+  .btn-purple:hover  { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(139,92,246,.4); }
+  .btn-danger    { background: rgba(239,68,68,.15); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+  .btn-danger:hover  { background: rgba(239,68,68,.25); }
+  .btn:disabled  { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+  /* ── Main Layout ── */
+  .main { padding: 24px 32px; }
+
+  /* ── Upload ── */
+  .upload-section { background: linear-gradient(135deg,#1e293b,#162032); border: 1px solid #1e40af; border-radius: 16px; padding: 28px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .upload-area { flex: 1; min-width: 280px; border: 2px dashed #334155; border-radius: 12px; padding: 24px; text-align: center; transition: all .3s; cursor: pointer; position: relative; }
+  .upload-area:hover,.upload-area.drag-over { border-color: #3b82f6; background: rgba(59,130,246,.05); }
+  .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-icon { font-size: 36px; margin-bottom: 10px; }
+  .upload-area p { color: #94a3b8; font-size: 14px; }
+  .upload-area p strong { color: #60a5fa; }
+  .upload-filename { margin-top: 8px; font-size: 13px; color: #34d399; display: none; }
+  .upload-info { display: flex; flex-direction: column; gap: 10px; }
+  .upload-info-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8; }
+
+  /* ── Stats ── */
+  .stats-bar { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; gap: 14px; transition: transform .2s; }
+  .stat-card:hover { transform: translateY(-2px); }
+  .stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .stat-icon.blue   { background: rgba(59,130,246,.15); }
+  .stat-icon.green  { background: rgba(16,185,129,.15); }
+  .stat-icon.yellow { background: rgba(245,158,11,.15); }
+  .stat-icon.purple { background: rgba(139,92,246,.15); }
+  .stat-info label  { font-size: 11px; color: #64748b; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+  .stat-value       { font-size: 26px; font-weight: 700; color: #f1f5f9; }
+  .stat-value.green  { color: #34d399; }
+  .stat-value.yellow { color: #fbbf24; }
+  .progress-bar-wrap { background: #0f172a; border-radius: 20px; height: 6px; overflow: hidden; margin-top: 4px; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg,#3b82f6,#34d399); border-radius: 20px; transition: width .5s ease; }
+
+  /* ── Table ── */
+  .table-section { background: #1e293b; border: 1px solid #334155; border-radius: 16px; overflow: hidden; }
+  .table-header  { padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #334155; background: #162032; gap: 12px; flex-wrap: wrap; }
+  .table-title   { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .search-box    { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 8px 14px; color: #e2e8f0; font-size: 13px; width: 220px; outline: none; transition: border-color .2s; }
+  .search-box:focus { border-color: #3b82f6; }
+  .search-box::placeholder { color: #475569; }
+  .table-wrap    { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #0f172a; color: #94a3b8; font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; padding: 12px 16px; text-align: center; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #334155; }
+  tbody tr { border-bottom: 1px solid #1e293b; transition: background .15s; }
+  tbody tr:hover { background: rgba(59,130,246,.05); }
+  tbody tr.attended { background: rgba(16,185,129,.06); }
+  tbody tr.attended:hover { background: rgba(16,185,129,.1); }
+  td { padding: 11px 16px; font-size: 13px; text-align: center; color: #cbd5e1; }
+  .attendance-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .attendance-badge.present { background: rgba(16,185,129,.15); color: #34d399; border: 1px solid rgba(16,185,129,.3); }
+  .attendance-badge.absent  { background: rgba(100,116,139,.15); color: #64748b; border: 1px solid rgba(100,116,139,.2); }
+  .empty-state { text-align: center; padding: 60px 20px; color: #475569; }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+
+  /* ── Connection ── */
+  .connection-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #64748b; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 6px #34d399; animation: pulse 2s infinite; display: inline-block; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* ── Toast ── */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+  .toast { padding: 14px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: slideIn .3s ease; max-width: 340px; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+  .toast.success { background: #065f46; border: 1px solid #059669; color: #d1fae5; }
+  .toast.error   { background: #7f1d1d; border: 1px solid #dc2626; color: #fee2e2; }
+  .toast.info    { background: #1e3a5f; border: 1px solid #3b82f6; color: #bfdbfe; }
+  @keyframes slideIn { from{transform:translateX(100px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+  /* ══════════════════════════════════════════
+     SMS 모달
+  ══════════════════════════════════════════ */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.75);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 500; opacity: 0; visibility: hidden;
+    transition: opacity .25s, visibility .25s;
+  }
+  .modal-overlay.open { opacity: 1; visibility: visible; }
+
+  .modal {
+    background: #1e293b; border: 1px solid #334155; border-radius: 20px;
+    width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto;
+    padding: 0; box-shadow: 0 32px 80px rgba(0,0,0,.6);
+    transform: translateY(24px); transition: transform .25s;
+    position: relative;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-header {
+    padding: 22px 28px 18px;
+    border-bottom: 1px solid #334155;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(135deg,#1e293b,#162032);
+    border-radius: 20px 20px 0 0;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .modal-header h2 { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+  .modal-close { background: none; border: none; color: #64748b; font-size: 22px; cursor: pointer; line-height: 1; transition: color .15s; padding: 4px; }
+  .modal-close:hover { color: #f1f5f9; }
+
+  .modal-body { padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* 모드 탭 */
+  .mode-tabs { display: flex; gap: 10px; }
+  .mode-tab {
+    flex: 1; padding: 12px 16px; border-radius: 10px; cursor: pointer;
+    border: 2px solid #334155; background: #0f172a; text-align: center;
+    transition: all .2s; font-size: 13px; font-weight: 600; color: #64748b;
+  }
+  .mode-tab:hover { border-color: #475569; color: #94a3b8; }
+  .mode-tab.active-all    { border-color: #3b82f6; background: rgba(59,130,246,.12); color: #60a5fa; }
+  .mode-tab.active-absent { border-color: #f59e0b; background: rgba(245,158,11,.12);  color: #fbbf24; }
+  .mode-tab .tab-icon { font-size: 22px; display: block; margin-bottom: 5px; }
+  .mode-tab .tab-label { display: block; }
+  .mode-tab .tab-sub { font-size: 11px; font-weight: 400; color: #475569; margin-top: 2px; display: block; }
+
+  /* 메시지 입력 */
+  .field-label { font-size: 12px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+  .char-count { font-size: 11px; font-weight: 400; color: #475569; }
+  .char-count.warn { color: #fbbf24; }
+  textarea {
+    width: 100%; background: #0f172a; border: 1.5px solid #334155; border-radius: 10px;
+    padding: 14px 16px; font-size: 14px; color: #f1f5f9; outline: none;
+    resize: vertical; min-height: 140px; font-family: inherit;
+    transition: border-color .2s; line-height: 1.6;
+  }
+  textarea:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,.15); }
+  textarea::placeholder { color: #475569; }
+
+  /* 변수 치환 팁 */
+  .var-tips { background: rgba(139,92,246,.08); border: 1px solid rgba(139,92,246,.25); border-radius: 10px; padding: 12px 14px; font-size: 12px; color: #a78bfa; }
+  .var-tips strong { color: #c4b5fd; }
+  .var-chip { display: inline-block; background: rgba(139,92,246,.2); border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 700; margin: 2px 2px 0; cursor: pointer; transition: background .15s; }
+  .var-chip:hover { background: rgba(139,92,246,.35); }
+
+  /* 미리보기 패널 */
+  .preview-panel { background: #0f172a; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
+  .preview-header { padding: 11px 16px; background: #162032; border-bottom: 1px solid #334155; display: flex; align-items: center; justify-content: space-between; }
+  .preview-header span { font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: #64748b; }
+  .preview-count { font-size: 13px; font-weight: 700; }
+  .preview-count .num { font-size: 18px; color: #3b82f6; }
+  .preview-count.absent-mode .num { color: #fbbf24; }
+  .preview-list { max-height: 150px; overflow-y: auto; }
+  .preview-item { display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,.04); font-size: 12px; }
+  .preview-item:last-child { border-bottom: none; }
+  .preview-item .p-name { font-weight: 600; color: #e2e8f0; min-width: 60px; }
+  .preview-item .p-phone { color: #64748b; font-family: monospace; }
+  .preview-item .p-dept  { color: #475569; font-size: 11px; }
+  .preview-empty { text-align: center; padding: 24px; color: #475569; font-size: 13px; }
+  .skip-info { padding: 8px 16px; font-size: 11px; color: #ef4444; background: rgba(239,68,68,.06); }
+
+  /* 발송 버튼 영역 */
+  .modal-footer { padding: 18px 28px 24px; display: flex; gap: 12px; border-top: 1px solid #334155; }
+  .btn-send { flex: 1; padding: 14px; font-size: 15px; font-weight: 700; border-radius: 12px; cursor: pointer; border: none; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-send.all-mode    { background: linear-gradient(135deg,#3b82f6,#1d4ed8); color: #fff; box-shadow: 0 8px 24px rgba(59,130,246,.3); }
+  .btn-send.absent-mode { background: linear-gradient(135deg,#f59e0b,#d97706); color: #fff; box-shadow: 0 8px 24px rgba(245,158,11,.3); }
+  .btn-send:hover:not(:disabled) { transform: translateY(-2px); }
+  .btn-send:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .btn-cancel-modal { padding: 14px 24px; background: #334155; color: #94a3b8; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; font-weight: 600; transition: background .2s; }
+  .btn-cancel-modal:hover { background: #475569; color: #e2e8f0; }
+
+  /* 발송 결과 오버레이 */
+  .result-overlay { position: absolute; inset: 0; background: rgba(15,23,42,.95); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s; }
+  .result-overlay.show { opacity: 1; visibility: visible; }
+  .result-icon-lg { font-size: 56px; }
+  .result-title-lg { font-size: 20px; font-weight: 700; }
+  .result-desc { font-size: 14px; color: #94a3b8; text-align: center; max-width: 340px; }
+  .result-close-btn { margin-top: 8px; padding: 10px 28px; background: #334155; border: none; border-radius: 10px; color: #e2e8f0; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s; }
+  .result-close-btn:hover { background: #475569; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">📋</div>
+    <div><h1>출석 관리 <span>시스템</span></h1></div>
+    <span class="badge">ADMIN</span>
+  </div>
+  <div class="header-actions">
+    <div class="connection-status">
+      <span class="live-dot" id="liveDot" style="background:#ef4444;box-shadow:0 0 6px #ef4444"></span>
+      <span id="connStatus">연결 중...</span>
+    </div>
+    <button class="btn btn-purple" id="smsBtn" onclick="openSmsModal()" disabled>
+      💬 문자 보내기
+    </button>
+    <button class="btn btn-success" id="downloadBtn" onclick="downloadFile()" disabled>
+      ⬇️ 출석부 다운로드
+    </button>
+    <button class="btn btn-danger" id="resetBtn" onclick="resetData()" disabled>
+      🗑️ 초기화
+    </button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <!-- Upload -->
+  <div class="upload-section">
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept=".xlsx,.xls" onchange="handleFileSelect(event)">
+      <div class="upload-icon">📂</div>
+      <p><strong>클릭하거나 파일을 드래그</strong>하여 업로드</p>
+      <p style="font-size:12px;margin-top:4px;">Excel 파일 (.xlsx, .xls)</p>
+      <div class="upload-filename" id="uploadFilename"></div>
+    </div>
+    <div><button class="btn btn-primary" id="uploadBtn" onclick="uploadFile()" disabled>⬆️ 업로드</button></div>
+    <div class="upload-info">
+      <div class="upload-info-item"><span>📌</span><span>필수 컬럼: 사번, 이름, 소속, 직책, 이메일, 연락처</span></div>
+      <div class="upload-info-item"><span>🔄</span><span>재업로드 시 기존 출석 데이터가 초기화됩니다</span></div>
+      <div class="upload-info-item"><span>🌐</span><span>사용자 페이지: <strong style="color:#60a5fa">/user</strong></span></div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat-card"><div class="stat-icon blue">👥</div><div class="stat-info"><label>전체 인원</label><div class="stat-value" id="totalCount">0</div></div></div>
+    <div class="stat-card"><div class="stat-icon green">✅</div><div class="stat-info"><label>출석 완료</label><div class="stat-value green" id="attendedCount">0</div></div></div>
+    <div class="stat-card"><div class="stat-icon yellow">⏳</div><div class="stat-info"><label>미출석</label><div class="stat-value yellow" id="absentCount">0</div></div></div>
+    <div class="stat-card"><div class="stat-icon purple">📊</div><div class="stat-info"><label>출석률</label><div class="stat-value" id="rateValue">0%</div><div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div></div></div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-section">
+    <div class="table-header">
+      <div class="table-title">📋 출석 명단 <span class="live-dot" id="tableLive" style="display:none"></span></div>
+      <input class="search-box" id="searchBox" type="text" placeholder="🔍  이름, 사번, 소속 검색..." oninput="filterTable()">
+    </div>
+    <div class="table-wrap">
+      <table id="dataTable">
+        <thead>
+          <tr><th>#</th><th>사번</th><th>이름</th><th>소속</th><th>직책</th><th>이메일</th><th>연락처</th><th>출석체크</th></tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="8"><div class="empty-state"><div class="icon">📂</div><p>엑셀 파일을 업로드하면 명단이 표시됩니다.</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ═══════════════════════════════════════════════
+     SMS 모달
+═══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="smsModal" onclick="onModalOverlayClick(event)">
+  <div class="modal" id="smsModalBox">
+
+    <!-- 발송 결과 오버레이 -->
+    <div class="result-overlay" id="resultOverlay">
+      <div class="result-icon-lg" id="resultIconLg"></div>
+      <div class="result-title-lg" id="resultTitleLg"></div>
+      <div class="result-desc" id="resultDescLg"></div>
+      <button class="result-close-btn" onclick="closeResultOverlay()">닫기</button>
+    </div>
+
+    <!-- 헤더 -->
+    <div class="modal-header">
+      <h2>💬 문자 메시지 발송</h2>
+      <button class="modal-close" onclick="closeSmsModal()">✕</button>
+    </div>
+
+    <!-- 바디 -->
+    <div class="modal-body">
+
+      <!-- 발송 모드 선택 -->
+      <div>
+        <div class="field-label">발송 대상 선택</div>
+        <div class="mode-tabs">
+          <div class="mode-tab active-all" id="tabAll" onclick="setMode('all')">
+            <span class="tab-icon">📢</span>
+            <span class="tab-label">전체 발송</span>
+            <span class="tab-sub">명단 전원</span>
+          </div>
+          <div class="mode-tab" id="tabAbsent" onclick="setMode('absent')">
+            <span class="tab-icon">⏰</span>
+            <span class="tab-label">미출석자 발송</span>
+            <span class="tab-sub">출석 미완료 인원</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 메시지 입력 -->
+      <div>
+        <div class="field-label">
+          <span>메시지 내용</span>
+          <span class="char-count" id="charCount">0 / 90 byte (SMS)</span>
+        </div>
+        <textarea id="msgText" placeholder="발송할 메시지를 입력하세요.
+예) [출석 안내] 안녕하세요, [*이름*]님. 오늘 행사 출석 확인 바랍니다." oninput="onMsgInput()"></textarea>
+      </div>
+
+      <!-- 치환 변수 팁 -->
+      <div class="var-tips">
+        <strong>💡 치환 변수</strong> — 클릭하면 커서 위치에 삽입됩니다<br>
+        <span class="var-chip" onclick="insertVar('[*이름*]')">[*이름*]</span>
+        <span style="font-size:11px;color:#64748b;margin-left:4px;">수신자 이름으로 자동 치환됩니다</span>
+      </div>
+
+      <!-- 미리보기 패널 -->
+      <div class="preview-panel">
+        <div class="preview-header">
+          <span>발송 대상 미리보기</span>
+          <div class="preview-count" id="previewCount"><span class="num">—</span></div>
+        </div>
+        <div id="previewList" class="preview-list">
+          <div class="preview-empty">메시지를 입력하면 발송 대상을 확인할 수 있습니다.</div>
+        </div>
+        <div id="skipInfo" class="skip-info" style="display:none"></div>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <!-- 푸터 -->
+    <div class="modal-footer">
+      <button class="btn-cancel-modal" onclick="closeSmsModal()">취소</button>
+      <button class="btn-send all-mode" id="sendBtn" onclick="confirmAndSend()" disabled>
+        <span id="sendBtnIcon">📤</span>
+        <span id="sendBtnText">발송하기</span>
+      </button>
+    </div>
+
+  </div><!-- /modal -->
+</div><!-- /overlay -->
+
+
+<script>
+/* ── 전역 상태 ── */
+let allData      = [];
+let selectedFile = null;
+let smsMode      = 'all';
+let previewData  = null;
+let isSending    = false;
+
+const socket = io();
+socket.on('connect', () => {
+  document.getElementById('liveDot').style.cssText = 'background:#34d399;box-shadow:0 0 6px #34d399';
+  document.getElementById('connStatus').textContent = '실시간 연결됨';
+  document.getElementById('tableLive').style.display = 'inline-block';
+});
+socket.on('disconnect', () => {
+  document.getElementById('liveDot').style.cssText = 'background:#ef4444;box-shadow:0 0 6px #ef4444';
+  document.getElementById('connStatus').textContent = '연결 끊김';
+  document.getElementById('tableLive').style.display = 'none';
+});
+socket.on('data_updated', (payload) => {
+  allData = payload.data;
+  renderTable(allData);
+  updateStats(allData);
+});
+
+/* ── Drag & Drop ── */
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('drag-over'); const f = e.dataTransfer.files[0]; if(f) setFile(f); });
+
+function handleFileSelect(e) { if(e.target.files[0]) setFile(e.target.files[0]); }
+function setFile(f) {
+  selectedFile = f;
+  const el = document.getElementById('uploadFilename');
+  el.textContent = '📄 ' + f.name; el.style.display = 'block';
+  document.getElementById('uploadBtn').disabled = false;
+}
+
+function uploadFile() {
+  if(!selectedFile) return;
+  const fd = new FormData(); fd.append('file', selectedFile);
+  const btn = document.getElementById('uploadBtn');
+  btn.disabled = true; btn.textContent = '업로드 중...';
+  fetch('/api/upload', {method:'POST', body: fd}).then(r=>r.json()).then(res => {
+    btn.textContent = '⬆️ 업로드';
+    if(res.success) {
+      showToast(res.message, 'success');
+      ['downloadBtn','resetBtn','smsBtn'].forEach(id => document.getElementById(id).disabled = false);
+    } else { showToast(res.message, 'error'); btn.disabled = false; }
+  });
+}
+
+function renderTable(data) {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  const filtered = data.filter(r =>
+    (r['이름']||'').toLowerCase().includes(q) ||
+    (r['사번']||'').toLowerCase().includes(q) ||
+    (r['소속']||'').toLowerCase().includes(q)
+  );
+  const tbody = document.getElementById('tableBody');
+  if(!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="icon">${data.length?'🔍':'📂'}</div><p>${data.length?'검색 결과가 없습니다.':'엑셀 파일을 업로드하면 명단이 표시됩니다.'}</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map((r,i) => {
+    const att = r['출석체크'] && r['출석체크'].trim();
+    const badge = att
+      ? `<span class="attendance-badge present">✅ ${r['출석체크']}</span>`
+      : `<span class="attendance-badge absent">— 미출석</span>`;
+    return `<tr class="${att?'attended':''}">
+      <td style="color:#475569;font-size:12px">${i+1}</td>
+      <td>${r['사번']||''}</td><td><strong>${r['이름']||''}</strong></td>
+      <td>${r['소속']||''}</td><td>${r['직책']||''}</td>
+      <td style="font-size:12px">${r['이메일']||''}</td>
+      <td>${r['연락처']||''}</td><td>${badge}</td>
+    </tr>`;
+  }).join('');
+}
+function filterTable() { renderTable(allData); }
+
+function updateStats(data) {
+  if(!data.length) { document.getElementById('statsBar').style.display='none'; return; }
+  const att   = data.filter(r => r['출석체크'] && r['출석체크'].trim()).length;
+  const total = data.length;
+  const rate  = total ? Math.round(att/total*100) : 0;
+  document.getElementById('statsBar').style.display = 'grid';
+  document.getElementById('totalCount').textContent    = total;
+  document.getElementById('attendedCount').textContent = att;
+  document.getElementById('absentCount').textContent   = total-att;
+  document.getElementById('rateValue').textContent     = rate+'%';
+  document.getElementById('progressBar').style.width   = rate+'%';
+  ['downloadBtn','resetBtn','smsBtn'].forEach(id => document.getElementById(id).disabled = false);
+}
+
+function downloadFile() { window.location.href = '/api/download'; }
+function resetData() {
+  if(!confirm('모든 출석 데이터를 초기화하시겠습니까?')) return;
+  fetch('/api/reset',{method:'POST'}).then(()=>{
+    allData=[];selectedFile=null;
+    document.getElementById('uploadFilename').style.display='none';
+    ['uploadBtn','downloadBtn','resetBtn','smsBtn'].forEach(id=>document.getElementById(id).disabled=true);
+    showToast('데이터가 초기화되었습니다.','info');
+  });
+}
+
+function showToast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=(type==='success'?'✅':type==='error'?'❌':'ℹ️')+` ${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(), 4500);
+}
+
+/* ═══════════════════════════════════════════
+   SMS 모달 로직
+═══════════════════════════════════════════ */
+function openSmsModal() {
+  if(!allData.length) { showToast('명단을 먼저 업로드해주세요.','error'); return; }
+  document.getElementById('smsModal').classList.add('open');
+  document.getElementById('msgText').value = '';
+  document.getElementById('charCount').textContent = '0 / 90 byte (SMS)';
+  document.getElementById('charCount').className = 'char-count';
+  setMode('all');
+  refreshPreview();
+}
+function closeSmsModal() {
+  document.getElementById('smsModal').classList.remove('open');
+  document.getElementById('resultOverlay').classList.remove('show');
+}
+function onModalOverlayClick(e) {
+  if(e.target === document.getElementById('smsModal')) closeSmsModal();
+}
+
+function setMode(mode) {
+  smsMode = mode;
+  const tabAll    = document.getElementById('tabAll');
+  const tabAbsent = document.getElementById('tabAbsent');
+  const sendBtn   = document.getElementById('sendBtn');
+
+  if(mode === 'all') {
+    tabAll.className    = 'mode-tab active-all';
+    tabAbsent.className = 'mode-tab';
+    sendBtn.className   = 'btn-send all-mode';
+  } else {
+    tabAbsent.className = 'mode-tab active-absent';
+    tabAll.className    = 'mode-tab';
+    sendBtn.className   = 'btn-send absent-mode';
+  }
+  refreshPreview();
+}
+
+function onMsgInput() {
+  const msg = document.getElementById('msgText').value;
+  // byte 계산 (EUC-KR 기준: 한글 2byte)
+  let bytes = 0;
+  for(const c of msg) bytes += (c.charCodeAt(0) > 127) ? 2 : 1;
+  const type = bytes > 90 ? 'LMS' : 'SMS';
+  const limit = bytes > 90 ? 2000 : 90;
+  const el = document.getElementById('charCount');
+  el.textContent = `${bytes} / ${limit} byte (${type})`;
+  el.className = 'char-count' + (bytes > 80 && bytes <= 90 ? ' warn' : '');
+  refreshPreview();
+}
+
+function insertVar(varText) {
+  const ta = document.getElementById('msgText');
+  const s  = ta.selectionStart, e = ta.selectionEnd;
+  ta.value = ta.value.slice(0,s) + varText + ta.value.slice(e);
+  ta.selectionStart = ta.selectionEnd = s + varText.length;
+  ta.focus(); onMsgInput();
+}
+
+function refreshPreview() {
+  const msg = document.getElementById('msgText').value.trim();
+  const sendBtn = document.getElementById('sendBtn');
+
+  if(!msg) {
+    document.getElementById('previewList').innerHTML = '<div class="preview-empty">메시지를 입력하면 발송 대상을 확인할 수 있습니다.</div>';
+    document.getElementById('previewCount').innerHTML = '<span class="num">—</span>';
+    document.getElementById('skipInfo').style.display = 'none';
+    sendBtn.disabled = true; previewData = null; return;
+  }
+
+  fetch('/api/sms/preview', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({mode: smsMode, message: msg})
+  }).then(r=>r.json()).then(res => {
+    previewData = res;
+    if(!res.success) {
+      document.getElementById('previewList').innerHTML = `<div class="preview-empty">⚠️ ${res.message}</div>`;
+      sendBtn.disabled = true; return;
+    }
+
+    const cntEl = document.getElementById('previewCount');
+    cntEl.className = 'preview-count' + (smsMode==='absent'?' absent-mode':'');
+    cntEl.innerHTML = `<span class="num">${res.count}</span>명 발송 예정`;
+
+    if(!res.count) {
+      document.getElementById('previewList').innerHTML = '<div class="preview-empty">발송 가능한 번호가 없습니다.</div>';
+      sendBtn.disabled = true;
+    } else {
+      document.getElementById('previewList').innerHTML = res.targets.map(t =>
+        `<div class="preview-item">
+          <span class="p-name">${t.name}</span>
+          <span class="p-phone">${t.phone}</span>
+          <span class="p-dept">${t.dept}</span>
+        </div>`
+      ).join('');
+      sendBtn.disabled = false;
+    }
+
+    const skipEl = document.getElementById('skipInfo');
+    if(res.skipped && res.skipped.length) {
+      skipEl.style.display = 'block';
+      skipEl.textContent = `⚠️ 번호 오류로 제외 ${res.skipped.length}명: ${res.skipped.map(s=>s.name).join(', ')}`;
+    } else { skipEl.style.display = 'none'; }
+
+    const icon = document.getElementById('sendBtnIcon');
+    const txt  = document.getElementById('sendBtnText');
+    if(smsMode === 'all') { icon.textContent='📢'; txt.textContent=`전체 ${res.count}명 발송`; }
+    else                  { icon.textContent='⏰'; txt.textContent=`미출석 ${res.count}명 발송`; }
+  });
+}
+
+function confirmAndSend() {
+  if(!previewData || !previewData.count || isSending) return;
+  const modeLabel = smsMode === 'all' ? '전체' : '미출석자';
+  if(!confirm(`${modeLabel} ${previewData.count}명에게 문자를 발송하시겠습니까?\n\n발송 후 취소가 불가하며, 요금이 차감됩니다.`)) return;
+  sendSms();
+}
+
+function sendSms() {
+  const msg  = document.getElementById('msgText').value.trim();
+  const btn  = document.getElementById('sendBtn');
+  isSending = true;
+  btn.disabled = true;
+  document.getElementById('sendBtnIcon').textContent = '⏳';
+  document.getElementById('sendBtnText').textContent = '발송 중...';
+
+  fetch('/api/sms/send', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({mode: smsMode, message: msg})
+  }).then(r=>r.json()).then(res => {
+    isSending = false;
+    showResultOverlay(res);
+  }).catch(err => {
+    isSending = false;
+    btn.disabled = false;
+    document.getElementById('sendBtnIcon').textContent = '📤';
+    document.getElementById('sendBtnText').textContent = '발송하기';
+    showToast('발송 중 오류가 발생했습니다.', 'error');
+  });
+}
+
+function showResultOverlay(res) {
+  const ov = document.getElementById('resultOverlay');
+  document.getElementById('resultIconLg').textContent  = res.success ? '🎉' : '❌';
+  document.getElementById('resultTitleLg').textContent = res.success ? '발송 완료!' : '발송 실패';
+  document.getElementById('resultTitleLg').style.color = res.success ? '#34d399' : '#f87171';
+
+  let desc = res.message;
+  if(res.success && res.sent_count) {
+    desc = `${res.sent_count}명에게 문자 발송이 완료되었습니다.`;
+    if(res.skipped && res.skipped.length) desc += `\n(번호 오류 ${res.skipped.length}명 제외)`;
+  }
+  document.getElementById('resultDescLg').textContent = desc;
+  ov.classList.add('show');
+}
+
+function closeResultOverlay() {
+  document.getElementById('resultOverlay').classList.remove('show');
+  closeSmsModal();
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = false;
+  document.getElementById('sendBtnIcon').textContent = '📤';
+  document.getElementById('sendBtnText').textContent = '발송하기';
+}
+
+/* ESC 키로 닫기 */
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeSmsModal(); });
+</script>
+</body>
+</html>
