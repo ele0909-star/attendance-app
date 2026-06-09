@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'attendance_secret_key_2024'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['DOWNLOAD_FOLDER'] = 'downloads'
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # =====================================================================
 #  뿌리오 API 설정 — 실제 값으로 교체하세요
@@ -26,8 +26,8 @@ PPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea15
 PPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)
 # =====================================================================
 
-PPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'
-PPURIO_MESSAGE_URL = 'https://api.ppurio.com/v1/message'
+PPURIO_TOKEN_URL   = 'https://message.ppurio.com/v1/token'
+PPURIO_MESSAGE_URL = 'https://message.ppurio.com/v1/message'
 
 # In-memory storage
 attendance_data = []
@@ -54,10 +54,16 @@ def normalize_phone(raw: str) -> str:
 def get_ppurio_token() -> str:
     """뿌리오 액세스 토큰 발급"""
     credential = base64.b64encode(f'{PPURIO_ACCOUNT}:{PPURIO_API_KEY}'.encode()).decode()
-    resp = requests.post(
+    
+    session = requests.Session()
+adapter = requests.adapters.HTTPAdapter(max_retries=3)
+session.mount("https://", adapter)
+    
+        
+    resp = session.post(
         PPURIO_TOKEN_URL,
         headers={'Authorization': f'Basic {credential}', 'Content-Type': 'application/json'},
-        timeout=10
+        timeout=30
     )
     resp.raise_for_status()
     data = resp.json()
@@ -328,5 +334,4 @@ def on_connect():
 if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5000))
-    socketio.run(app, debug=False, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)
-
+    socketio.run(app, debug=False, host='0.0.0.0', port=port)

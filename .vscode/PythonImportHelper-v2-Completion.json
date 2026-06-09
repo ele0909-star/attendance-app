@@ -214,7 +214,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def get_ppurio_token() -> str:\n    \"\"\"뿌리오 액세스 토큰 발급\"\"\"\n    credential = base64.b64encode(f'{PPURIO_ACCOUNT}:{PPURIO_API_KEY}'.encode()).decode()\n    resp = requests.post(\n        PPURIO_TOKEN_URL,\n        headers={'Authorization': f'Basic {credential}', 'Content-Type': 'application/json'},\n        timeout=10\n    )\n    resp.raise_for_status()\n    data = resp.json()",
+        "peekOfCode": "def get_ppurio_token() -> str:\n    \"\"\"뿌리오 액세스 토큰 발급\"\"\"\n    credential = base64.b64encode(f'{PPURIO_ACCOUNT}:{PPURIO_API_KEY}'.encode()).decode()\n    session = requests.Session()\nadapter = requests.adapters.HTTPAdapter(max_retries=3)\nsession.mount(\"https://\", adapter)\n    resp = session.post(\n        PPURIO_TOKEN_URL,\n        headers={'Authorization': f'Basic {credential}', 'Content-Type': 'application/json'},\n        timeout=30",
         "detail": "app",
         "documentation": {}
     },
@@ -340,7 +340,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def on_connect():\n    with data_lock:\n        data = list(attendance_data)\n    emit('data_updated', {'data': data})\nif __name__ == '__main__':\n    import os\n    port = int(os.environ.get('PORT', 5000))\n    socketio.run(app, debug=False, host='0.0.0.0', port=port, allow_unsafe_werkzeug=True)",
+        "peekOfCode": "def on_connect():\n    with data_lock:\n        data = list(attendance_data)\n    emit('data_updated', {'data': data})\nif __name__ == '__main__':\n    import os\n    port = int(os.environ.get('PORT', 5000))\n    socketio.run(app, debug=False, host='0.0.0.0', port=port)",
         "detail": "app",
         "documentation": {}
     },
@@ -349,7 +349,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app = Flask(__name__)\napp.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키",
+        "peekOfCode": "app = Flask(__name__)\napp.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키",
         "detail": "app",
         "documentation": {}
     },
@@ -358,7 +358,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)",
+        "peekOfCode": "app.config['SECRET_KEY'] = 'attendance_secret_key_2024'\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)",
         "detail": "app",
         "documentation": {}
     },
@@ -367,7 +367,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================",
+        "peekOfCode": "app.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================",
         "detail": "app",
         "documentation": {}
     },
@@ -376,7 +376,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'",
+        "peekOfCode": "app.config['DOWNLOAD_FOLDER'] = 'downloads'\nsocketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://message.ppurio.com/v1/token'",
         "detail": "app",
         "documentation": {}
     },
@@ -385,7 +385,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "socketio = SocketIO(app, cors_allowed_origins=\"*\", async_mode='threading')\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'\nPPURIO_MESSAGE_URL = 'https://api.ppurio.com/v1/message'",
+        "peekOfCode": "socketio = SocketIO(app, cors_allowed_origins=\"*\")\n# =====================================================================\n#  뿌리오 API 설정 — 실제 값으로 교체하세요\n# =====================================================================\nPPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디\nPPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키\nPPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)\n# =====================================================================\nPPURIO_TOKEN_URL   = 'https://message.ppurio.com/v1/token'\nPPURIO_MESSAGE_URL = 'https://message.ppurio.com/v1/message'",
         "detail": "app",
         "documentation": {}
     },
@@ -394,7 +394,7 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "PPURIO_MESSAGE_URL = 'https://api.ppurio.com/v1/message'\n# In-memory storage\nattendance_data = []\ndata_lock = threading.Lock()\nCOLUMNS = ['사번', '이름', '소속', '직책', '이메일', '연락처', '출석체크']\ndef normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)",
+        "peekOfCode": "PPURIO_MESSAGE_URL = 'https://message.ppurio.com/v1/message'\n# In-memory storage\nattendance_data = []\ndata_lock = threading.Lock()\nCOLUMNS = ['사번', '이름', '소속', '직책', '이메일', '연락처', '출석체크']\ndef normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)",
         "detail": "app",
         "documentation": {}
     },
@@ -422,6 +422,15 @@
         "importPath": "app",
         "description": "app",
         "peekOfCode": "COLUMNS = ['사번', '이름', '소속', '직책', '이메일', '연락처', '출석체크']\ndef normalize_phone(raw: str) -> str:\n    \"\"\"\n    연락처를 숫자만 남기되, 원본이 010으로 시작하면 반드시 010을 유지한다.\n    예) '010-1234-5678' → '01012345678'\n         '1012345678'   → '1012345678'  (010 없으면 그대로)\n    \"\"\"\n    raw = str(raw).strip()\n    digits_only = re.sub(r'\\D', '', raw)\n    # 원본(하이픈 제거 전)이 010으로 시작하면 강제 보정",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "adapter",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "adapter = requests.adapters.HTTPAdapter(max_retries=3)\nsession.mount(\"https://\", adapter)\n    resp = session.post(\n        PPURIO_TOKEN_URL,\n        headers={'Authorization': f'Basic {credential}', 'Content-Type': 'application/json'},\n        timeout=30\n    )\n    resp.raise_for_status()\n    data = resp.json()\n    return data['token']",
         "detail": "app",
         "documentation": {}
     }
