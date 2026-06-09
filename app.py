@@ -21,9 +21,9 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 # =====================================================================
 #  뿌리오 API 설정 — 실제 값으로 교체하세요
 # =====================================================================
-PPURIO_ACCOUNT  = 'YOUR_PPURIO_ACCOUNT'   # 뿌리오 계정 아이디
-PPURIO_API_KEY  = 'YOUR_API_KEY'          # 뿌리오 연동 개발 인증키
-PPURIO_SENDER   = '01012345678'           # 발신자 번호 (숫자만, 등록된 번호)
+PPURIO_ACCOUNT  = 'nvr_4277003079'   # 뿌리오 계정 아이디
+PPURIO_API_KEY  = 'fc4839e53562e9711a3a5b0a49894547a39b7ca087fe5e3af3016c726ea155f5'          # 뿌리오 연동 개발 인증키
+PPURIO_SENDER   = '01047722491'           # 발신자 번호 (숫자만, 등록된 번호)
 # =====================================================================
 
 PPURIO_TOKEN_URL   = 'https://api.ppurio.com/v1/token'
